@@ -3,7 +3,8 @@ import { Github, ExternalLink, MessageSquare, Mail, Terminal } from 'lucide-reac
 
 export const Header: React.FC<{
   onOpenReadme: () => void;
-}> = ({ onOpenReadme }) => {
+  onOpenDiscussions: () => void;
+}> = ({ onOpenReadme, onOpenDiscussions }) => {
   return (
     <header className="border-b border-[#30363d] bg-[#161b22] px-4 py-6 sm:px-8">
       <div className="mx-auto max-w-6xl flex flex-col md:flex-row md:items-center md:justify-between gap-6">
@@ -45,15 +46,13 @@ export const Header: React.FC<{
             GitHub Profile
             <ExternalLink className="w-3 h-3 text-[#8b949e]" />
           </a>
-          <a
-            href="https://github.com/lblinarul-dev/lblinarul-dev/discussions"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-medium rounded-md bg-[#21262d] hover:bg-[#30363d] text-white border border-[#30363d] transition-colors"
+          <button
+            onClick={onOpenDiscussions}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-medium rounded-md bg-[#21262d] hover:bg-[#30363d] text-white border border-[#30363d] transition-colors cursor-pointer"
           >
             <MessageSquare className="w-4 h-4 text-[#3fb950]" />
             Discussions
-          </a>
+          </button>
           <button
             onClick={onOpenReadme}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-medium rounded-md bg-[#238636] hover:bg-[#2ea043] text-white transition-colors cursor-pointer"

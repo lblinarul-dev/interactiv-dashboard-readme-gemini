@@ -140,6 +140,131 @@ function escapeMarkdown(val: string): string {
   return val.replace(/\|/g, '\\|').replace(/\r/g, ' ').replace(/\n/g, ' ').trim();
 }
 
+// In-memory discussions storage initialized with profile-relevant topics
+let discussions: any[] = [
+  {
+    id: 'disc-1',
+    title: 'Open Q&A for Junior Developers: Debugging, Code Reviews & Getting Unstuck',
+    category: 'Mentoring',
+    author: 'Lblinarul',
+    authorRole: 'Senior Dev / Maintainer',
+    content:
+      'Welcome! If you are a junior engineer with questions about debugging tricky errors, structuring clean React components, or understanding backend data flows, drop your question here. I prioritize explaining the root cause rather than just giving a quick patch.',
+    createdAt: '2026-09-08T10:30:00Z',
+    likes: 12,
+    replies: [
+      {
+        id: 'rep-1',
+        author: 'SarahM',
+        authorRole: 'Junior Frontend Dev',
+        content: 'What is your recommended process when a React component re-renders too many times in production?',
+        createdAt: '2026-09-08T14:10:00Z',
+      },
+      {
+        id: 'rep-2',
+        author: 'Lblinarul',
+        authorRole: 'Senior Dev / Maintainer',
+        content: 'Start with React DevTools Profiler to record the exact render trigger. 90% of the time, it is either un-memoized object/array references passed as props, or state lifted too high that forces unrelated children to update. Measure first, avoid blindly wrapping everything in useMemo!',
+        createdAt: '2026-09-08T16:05:00Z',
+      },
+    ],
+  },
+  {
+    id: 'disc-2',
+    title: 'react-debugger Case Study: Isolating silent failures in async flows',
+    category: 'Frontend',
+    author: 'Lblinarul',
+    authorRole: 'Senior Dev / Maintainer',
+    content:
+      'In react-debugger, we investigated why images reverted to temporary DALL-E links. The root cause was an async helper defined inside another function that was never invoked. How do you catch uncalled async helpers in your codebase?',
+    createdAt: '2026-09-09T09:15:00Z',
+    likes: 8,
+    replies: [
+      {
+        id: 'rep-3',
+        author: 'MarcusK',
+        authorRole: 'Backend Engineer',
+        content: 'Static analysis (ruff / flake8 in Python, ESLint with no-unused-vars in JS) caught similar issues for us, plus thorough integration testing covering the complete asset lifecycle.',
+        createdAt: '2026-09-09T11:20:00Z',
+      },
+    ],
+  },
+  {
+    id: 'disc-3',
+    title: 'Math Mentoring: Understanding Gradient Descent via Multivariable Calculus',
+    category: 'Math & Algorithms',
+    author: 'Lblinarul',
+    authorRole: 'Senior Dev / Maintainer',
+    content:
+      'Many students struggle when jumping from single-variable calculus to partial derivatives and gradients in machine learning. Remember that the gradient is simply a vector pointing in the direction of steepest ascent on the loss surface. Anyone having questions on upcoming calculus or linear algebra coursework is welcome to post here!',
+    createdAt: '2026-09-09T15:40:00Z',
+    likes: 15,
+    replies: [],
+  },
+];
+
+// Discussions API endpoints
+app.get('/api/discussions', (req, res) => {
+  res.json({ discussions });
+});
+
+app.post('/api/discussions', (req, res) => {
+  const { title, category, author, content } = req.body;
+  if (!title || !content || !author) {
+    return res.status(400).json({ error: 'Title, author, and content are required' });
+  }
+
+  const newTopic = {
+    id: `disc-${Date.now()}`,
+    title: String(title).trim(),
+    category: category || 'General',
+    author: String(author).trim(),
+    authorRole: 'Community Member',
+    content: String(content).trim(),
+    createdAt: new Date().toISOString(),
+    likes: 0,
+    replies: [],
+  };
+
+  discussions.unshift(newTopic);
+  res.status(201).json({ discussion: newTopic });
+});
+
+app.post('/api/discussions/:id/replies', (req, res) => {
+  const { id } = req.params;
+  const { author, content } = req.body;
+  if (!author || !content) {
+    return res.status(400).json({ error: 'Author and content are required' });
+  }
+
+  const topic = discussions.find((d) => d.id === id);
+  if (!topic) {
+    return res.status(404).json({ error: 'Discussion topic not found' });
+  }
+
+  const newReply = {
+    id: `rep-${Date.now()}`,
+    author: String(author).trim(),
+    authorRole: 'Community Member',
+    content: String(content).trim(),
+    createdAt: new Date().toISOString(),
+  };
+
+  topic.replies.push(newReply);
+  res.status(201).json({ reply: newReply });
+});
+
+app.post('/api/discussions/:id/like', (req, res) => {
+  const { id } = req.params;
+  const topic = discussions.find((d) => d.id === id);
+  if (!topic) {
+    return res.status(404).json({ error: 'Discussion topic not found' });
+  }
+  topic.likes = (topic.likes || 0) + 1;
+  res.json({ likes: topic.likes });
+});
+
+
 // Sync README logic adhering to update_own_projects.py & update_external_contributions.py
 app.post('/api/sync-readme', async (req, res) => {
   try {

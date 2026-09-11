@@ -1,7 +1,9 @@
 import React from 'react';
 import { BookOpen, GraduationCap, Compass, MessageSquare, ExternalLink } from 'lucide-react';
 
-export const MentoringSection: React.FC = () => {
+export const MentoringSection: React.FC<{
+  onOpenDiscussions?: () => void;
+}> = ({ onOpenDiscussions }) => {
   return (
     <section className="space-y-6">
       <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
@@ -47,16 +49,13 @@ export const MentoringSection: React.FC = () => {
             </ul>
           </div>
 
-          <a
-            href="https://github.com/lblinarul-dev/lblinarul-dev/discussions"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-[#21262d] hover:bg-[#30363d] text-sm font-semibold text-white border border-[#30363d] transition-colors"
+          <button
+            onClick={onOpenDiscussions}
+            className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-[#21262d] hover:bg-[#30363d] text-sm font-semibold text-white border border-[#30363d] transition-colors cursor-pointer"
           >
             <MessageSquare className="w-4 h-4 text-[#3fb950]" />
-            Ask in GitHub Discussions
-            <ExternalLink className="w-3.5 h-3.5 text-[#8b949e]" />
-          </a>
+            Ask in Community Discussions
+          </button>
         </div>
 
         {/* Math Mentoring */}

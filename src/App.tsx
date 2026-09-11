@@ -4,16 +4,25 @@ import { Overview } from './components/Overview.tsx';
 import { ProjectShowcase } from './components/ProjectShowcase.tsx';
 import { ActivitySection } from './components/ActivitySection.tsx';
 import { MentoringSection } from './components/MentoringSection.tsx';
+import { DiscussionsSection } from './components/DiscussionsSection.tsx';
 import { ReadmeModal } from './components/ReadmeModal.tsx';
 import { Mail, MessageSquare, ExternalLink, Github, Terminal } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'all' | 'overview' | 'projects' | 'activity' | 'mentoring'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'overview' | 'projects' | 'activity' | 'mentoring' | 'discussions'>('all');
   const [isReadmeOpen, setIsReadmeOpen] = useState(false);
+
+  const handleOpenDiscussions = () => {
+    setActiveTab('discussions');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="min-h-screen bg-[#0d1117] text-[#c9d1d9] flex flex-col font-sans">
-      <Header onOpenReadme={() => setIsReadmeOpen(true)} />
+      <Header
+        onOpenReadme={() => setIsReadmeOpen(true)}
+        onOpenDiscussions={handleOpenDiscussions}
+      />
 
       {/* Navigation Pills */}
       <div className="border-b border-[#30363d] bg-[#161b22]/80 sticky top-0 z-30 backdrop-blur-md px-4 py-2.5">
@@ -24,6 +33,7 @@ export default function App() {
             { id: 'projects', label: '📁 Projects & Works' },
             { id: 'activity', label: '📊 Activity & Snake' },
             { id: 'mentoring', label: '🌱 Mentoring' },
+            { id: 'discussions', label: '💬 Discussions & Q&A' },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -45,7 +55,12 @@ export default function App() {
         {(activeTab === 'all' || activeTab === 'overview') && <Overview />}
         {(activeTab === 'all' || activeTab === 'projects') && <ProjectShowcase />}
         {(activeTab === 'all' || activeTab === 'activity') && <ActivitySection />}
-        {(activeTab === 'all' || activeTab === 'mentoring') && <MentoringSection />}
+        {(activeTab === 'all' || activeTab === 'mentoring') && (
+          <MentoringSection onOpenDiscussions={handleOpenDiscussions} />
+        )}
+        {(activeTab === 'all' || activeTab === 'discussions') && (
+          <DiscussionsSection />
+        )}
 
         {/* Tech Stack Matrix & Contact */}
         <section className="space-y-6 pt-4 border-t border-[#30363d]">
@@ -103,15 +118,13 @@ export default function App() {
             </div>
 
             <div className="flex items-center gap-2">
-              <a
-                href="https://github.com/lblinarul-dev/lblinarul-dev/discussions"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-[#238636] hover:bg-[#2ea043] text-xs font-semibold text-white transition-colors"
+              <button
+                onClick={handleOpenDiscussions}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-[#238636] hover:bg-[#2ea043] text-xs font-semibold text-white transition-colors cursor-pointer"
               >
                 <MessageSquare className="w-3.5 h-3.5" />
-                Start Discussion
-              </a>
+                Open Discussions
+              </button>
               <a
                 href="mailto:lblinarul@gmail.com"
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-[#21262d] hover:bg-[#30363d] text-xs font-semibold text-white border border-[#30363d] transition-colors"

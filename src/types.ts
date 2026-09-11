@@ -26,3 +26,24 @@ export interface ProfileSyncStatus {
   status: 'idle' | 'syncing' | 'success' | 'error';
   message?: string;
 }
+
+export interface DiscussionReply {
+  id: string;
+  author: string;
+  authorRole?: string;
+  content: string;
+  createdAt: string;
+}
+
+export interface DiscussionTopic {
+  id: string;
+  title: string;
+  category: 'Mentoring' | 'Frontend' | 'Backend' | 'Math & Algorithms' | 'General';
+  author: string;
+  authorRole?: string;
+  content: string;
+  createdAt: string;
+  likes: number;
+  replies: DiscussionReply[];
+}
+
