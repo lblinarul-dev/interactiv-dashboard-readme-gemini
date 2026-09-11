@@ -1,0 +1,8 @@
+{
+  "name": "Lblinarul Dev Portfolio",
+  "description": "Interactive developer portfolio, GitHub profile showcase, and automated activity sync for Lblinarul.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

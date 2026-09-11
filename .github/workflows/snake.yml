@@ -1,0 +1,48 @@
+# Generate a contribution graph animation with a snake eating contributions.
+name: Generate Snake
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # every 6 hours
+  workflow_dispatch: {}
+
+concurrency:
+  group: contribution-snake
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out main branch
+        uses: actions/checkout@v5
+
+      - name: Generate contribution snake
+        uses: Platane/snk@v3
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          outputs: |
+            dist/github-contribution-grid-snake.svg
+            dist/github-contribution-grid-snake-dark.svg?palette=github-dark
+            dist/github-contribution-grid-snake.gif
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Copy generated assets into main
+        run: |
+          mkdir -p assets
+          cp dist/github-contribution-grid-snake.svg assets/github-contribution-grid-snake.svg
+          cp dist/github-contribution-grid-snake-dark.svg assets/github-contribution-grid-snake-dark.svg
+          cp dist/github-contribution-grid-snake.gif assets/github-contribution-grid-snake.gif
+
+      - name: Commit snake assets to main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/
+          git diff --cached --quiet || git commit -m "chore: update contribution snake"
+          git push origin HEAD:main
